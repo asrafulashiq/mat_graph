@@ -22,7 +22,7 @@ function varargout = grapherBeta(varargin)
 
 % Edit the above text to modify the response to help grapherBeta
 
-% Last Modified by GUIDE v2.5 16-Sep-2014 00:35:45
+% Last Modified by GUIDE v2.5 12-Apr-2014 16:51:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,36 +80,21 @@ varargout{1} = handles.output;
 
 
 
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function edit_eqn_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_eqn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of edit_eqn as text
+%        str2double(get(hObject,'String')) returns contents of edit_eqn as a double
 
-global xMin;
-global xMax;
-global yMin;
-global yMax;
+drawFunc(hObject,handles);
 
-eqn = get(hObject,'String') %getappdata(hObject,'String');
-meqn = modify_eqn_fun(eqn)
-%axes = get(0,'mainAxes');
-axes(handles.axes1);
 
-try
-
-h = ezplot(meqn,[xMin xMax yMin yMax]);
-set(h,'Color','m');
-grid on;
-catch err 
-   set(handles.edit1,'String',sprintf('%s%30s',eqn,'Error')); 
-end
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function edit_eqn_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_eqn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -121,9 +106,9 @@ end
 
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over edit1.
-function edit1_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+% --- Otherwise, executes on mouse press in 5 pixel border or over edit_eqn.
+function edit_eqn_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to edit_eqn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -146,19 +131,132 @@ global xMin;
 global xMax;
 global yMin;
 global yMax;
-xMin = -14;
-xMax = 14;
-yMin = -8;
-yMax = 8;
+xMin = -6;
+xMax = 6;
+yMin = -6;
+yMax = 6;
+draw_axis();
 
-set(gca,'XTick',xMin:2:xMax);
-set(gca,'YTick',yMin:2:yMax);
-plot([xMin xMax],[0 0],'k-','LineWidth',3);%draw x axis
-grid on;
-hold on;
-plot([0 0],[yMin yMax],'k-','LineWidth',3);
-hold on;
 
-axis normal;
-axis equal;
-axis image;
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenuX controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in popupmenuX.
+function popupmenuX_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenuX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenuX contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenuX
+global xMin;
+global xMax;
+global yMin;
+global yMax;
+val = get(hObject,'Value');
+string_list = get(hObject,'String');
+selected_string = string_list{val};
+
+xs = str2num(selected_string);
+
+xMin = -(xs/2);
+xMax = (xs/2);
+
+draw_axis();
+drawFunc(hObject,handles);
+
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenuX_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenuX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenuX controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over popupmenuX.
+function popupmenuX_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenuX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in popupmenuY.
+function popupmenuY_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenuY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenuY contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenuY
+
+global xMin;
+global xMax;
+global yMin;
+global yMax;
+val = get(hObject,'Value');
+string_list = get(hObject,'String');
+selected_string = string_list{val};
+
+ys = str2num(selected_string);
+
+yMin = -(ys/2);
+yMax = (ys/2);
+
+draw_axis();
+drawFunc(hObject,handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenuY_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenuY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenuX controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in clear_btn.
+function clear_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to clear_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.edit_eqn,'String','');
